@@ -19,16 +19,19 @@ module.exports = {
         ),
     async execute(interaction) {
         // create new proposal
-        if (interaction.options.getSubcommand() === 'new') {
-            const proposalStatus = createProposal(interaction);
+        switch (interaction.options.getSubcommand()) {
+            case 'new':
+                const proposalStatus = createProposal(interaction);
+                await interaction.reply(proposalStatus);
 
-            await interaction.reply(proposalStatus);
-
+                break;
             // Check how many members are in proposals
-        } else if (interaction.options.getSubcommand() === 'members') {
-            const memberCount = getProposalRoleMembers(interaction);
-            const votesToPass = Math.round(memberCount / 2);
-            await interaction.reply(`${memberCount} proposal member${(memberCount > 1) ? "s" : ""}\n${votesToPass} vote${(votesToPass > 1 ? "s" : "")} to pass`);
+            case 'members':
+                const memberCount = getProposalRoleMembers(interaction);
+                const votesToPass = Math.round(memberCount / 2);
+                await interaction.reply(`${memberCount} proposal member${(memberCount > 1) ? "s" : ""}\n${votesToPass} vote${(votesToPass > 1 ? "s" : "")} to pass`);
+
+                break;
         }
     }
 }
