@@ -29,5 +29,3 @@ const rest = new REST({ version: '9' }).setToken(token);
         console.error(error);
     }
 })();
-
-export { };
