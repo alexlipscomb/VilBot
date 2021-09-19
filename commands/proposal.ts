@@ -61,7 +61,7 @@ function createProposal(interaction) {
 /**
  * @summary Returns the members with the Proposal role
  * @param interaction The context where the command was called.
- * @returns {Array} An array of members. Undefined otherwise.
+ * @returns {number} Returns the number of members
  */
 function getProposalRoleMembers(interaction) {
     // Change this to be something called from a guild's database
