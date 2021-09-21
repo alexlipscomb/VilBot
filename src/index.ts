@@ -1,3 +1,4 @@
+require('source-map-support').install();
 import { BaseCommandInteraction, Client, Collection, Intents, Interaction } from 'discord.js';
 import * as fs from 'fs';
 import { ICommand } from './commands/interfaces/i.command';
