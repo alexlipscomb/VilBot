@@ -1,6 +1,7 @@
 import { MessageEmbed } from "discord.js";
+const { SlashCommandBuilder, userMention, memberNicknameMention, channelMention, roleMention, time } = require('@discordjs/builders');
+const { MessageActionRow, MessageButton } = require('discord.js');
 
-const { SlashCommandBuilder } = require('@discordjs/builders');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -29,8 +30,16 @@ module.exports = {
         // create new proposal
         switch (interaction.options.getSubcommand()) {
             case 'new':
-                const proposalEmbed = createProposal(interaction);
-                await interaction.reply({ embeds: [proposalEmbed] });
+                const proposalEmbed = createProposalEmbed(interaction);
+
+                const proposalMessage = await interaction.reply({ embeds: [proposalEmbed], fetchReply: true });
+                const pingMode = interaction.options.getBoolean('ping') ? true : false;
+
+                proposalMessage.startThread({ name: `Discuss ${interaction.options.getString('proposal').slice(0, 93)}`, autoArchiveDuration: 'MAX' });
+
+                if (pingMode) {
+                    proposalMessage.channel.send(roleMention('887200999935205377'));
+                }
 
                 break;
             // Check how many members are in proposals
@@ -54,16 +63,14 @@ module.exports = {
  * @param interaction The context where the command was called
  * @returns {boolean} Returns true if successful, false otherwise
  */
-function createProposal(interaction) {
+function createProposalEmbed(interaction) {
     // Set up all the parameters for the proposal
     const proposalContents = interaction.options.getString('proposal');
     const pingMode = interaction.options.getBoolean('ping') ? true : false;
     const guildId = interaction.guild.id;
     const userId = interaction.user.id;
-    const timeProposed = (function () {
-        const d = new Date();
-        return d;
-    })();
+    const date = new Date().toUTCString()
+    console.log(date);
 
     // Create proposal embed
     const embed = new MessageEmbed()
@@ -73,7 +80,7 @@ function createProposal(interaction) {
         // .setDescription(`**Proposal**\n${proposalContents}\nDate Proposed${timeProposed.getDate()}`);
         .addFields(
             { name: 'Proposal', value: proposalContents, inline: false },
-            { name: 'Date Proposed', value: "timeProposed", inline: false }
+            { name: 'Date Proposed', value: date, inline: false }
         )
 
     return embed;
@@ -106,6 +113,44 @@ function getProposalRoleMembers(interaction) {
     }
 
     return memberCount;
+}
+
+/**
+ * 
+ * @param interaction The context where the command was called
+ * @param channelId The ID of the channel to check for
+ * @returns {boolean} True if channel exists, false otherwise.
+ */
+function checkIfChannelExists(interaction, channelId: string) {
+    try {
+        const suggestionboxChannel = interaction.guild.channels.fetch(channelId);
+        return false;
+
+    } catch { // catch something useful here like the discord 404 not found error.
+        return true;
+    }
+}
+
+/**
+ * @summary Checks to see if a Discord Channel is a Text Channel or not
+ * @param channel The channel to test
+ * @returns {boolean} True if the channel is a Text Channel, false otherwise
+ */
+function isTextChannel(channel) {
+    switch (channel.type) {
+        case 'GUILD_TEXT':
+            return true;
+        default:
+            return false;
+    }
+}
+
+
+// Find a way to keep the number of db calls down to a minimum. Maybe only make one call, then store it in an object.
+function getGuildProposalChannel(guildId) {
+    const proposalChannelId = '889251642636124190'; // Change this to data stored in a database per guild.
+
+    return proposalChannelId;
 }
 
 export { };
