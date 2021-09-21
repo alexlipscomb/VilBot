@@ -6,7 +6,7 @@
   "scripts": {
     "start": "cd ./dist && node index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "compile": "rm -rf ./dist && npx tsc && cp ./src/config.json ./dist/",
+    "compile": "npx rimraf ./dist && npx tsc && npx copyfiles ./src/config.json ./dist/",
     "quickrun": "npm run compile && npm start"
   },
   "author": "Alex Lipscomb",
@@ -14,8 +14,11 @@
   "devDependencies": {
     "@discordjs/builders": "^0.6.0",
     "@discordjs/rest": "^0.1.0-canary.0",
+    "canvas": "^2.8.0",
+    "copyfiles": "^2.4.1",
     "discord-api-types": "^0.23.1",
     "discord.js": "^13.1.0",
+    "rimraf": "^3.0.2",
     "sequelize": "^6.6.5",
     "sqlite3": "^4.2.0",
     "tslint": "^6.1.3",
