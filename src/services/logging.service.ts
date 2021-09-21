@@ -101,7 +101,7 @@ export class Logger {
         }
 
         if (Logger._getLogLevel(tag) >= level) {
-            const datestr: string = ` - ${VilbotUtil.getTimestamp()} (UTC ${VilbotUtil.getUTCTimeStamp()}))`;
+            const datestr: string = ` - ${VilbotUtil.getTimestamp()} (UTC ${VilbotUtil.getUTCTimeStamp()})`;
             let color: string = '';
             switch (level) {
                 case LogLevel.FATAL:

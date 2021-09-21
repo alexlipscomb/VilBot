@@ -46,13 +46,16 @@ export class ProposalCommand implements ICommand {
 
     public async execute(interaction: CommandInteraction): Promise<void> {
         // create new proposal
-        switch (interaction.options.getSubcommand()) {
+        const subcommand: string = interaction.options.getSubcommand();
+        switch (subcommand) {
             case ProposalCommand.NEW_PROPOSAL:
                 return await this._proposalService.createNewProposal(interaction);
             case ProposalCommand.MEMBERS:
                 return await this._proposalService.getMemberCount(interaction);
             case ProposalCommand.SET_CHANNEL:
                 return await this._proposalService.setProposalChannel(interaction);
+            default:
+                return await interaction.reply(`Unknown command: ${subcommand}`);
         }
     }
 }

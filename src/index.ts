@@ -3,15 +3,19 @@ import { BaseCommandInteraction, Client, Intents, Interaction } from 'discord.js
 import * as fs from 'fs';
 import 'reflect-metadata';
 import Container from 'typedi';
+import { GarfCommand } from './commands/garf.command';
 import { CommandToken, ICommand } from './commands/interfaces/i.command';
 import { ProposalCommand } from './commands/proposal.command';
+import { SuggestionBoxCommand } from './commands/suggestion.box.command';
+import { TestCommand } from './commands/test.command';
+import { VilbotCommand } from './commands/vilbot.command';
 import { token } from './config.json';
 import { Logger } from './services/logging.service';
 
 const log: Logger = Logger.getLogger("index");
 
 // Load commands - commands must be present in this array to load
-Container.import([ProposalCommand]);
+Container.import([ProposalCommand, VilbotCommand, TestCommand, SuggestionBoxCommand, GarfCommand]);
 const commandContainers: ICommand[] = Container.getMany(CommandToken);
 log.debug(commandContainers);
 

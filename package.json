@@ -8,7 +8,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "clean": "npx rimraf ./dist",
     "compile": "npx tsc",
-    "postbuild": "npx copyfiles ./src/config.json ./src/logconfig.json ./dist/",
+    "postbuild": "npx copyfiles -f ./src/config.json ./src/logconfig.json ./dist/",
     "quickrun": "npm run clean && npm run compile && npm run postbuild && npm run start"
   },
   "author": "Alex Lipscomb",

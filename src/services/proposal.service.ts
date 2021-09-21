@@ -30,6 +30,7 @@ export class ProposalService {
 
     public async setProposalChannel(interaction: CommandInteraction): Promise<void> {
         // TODO
+        await interaction.reply("This feature has not been implemented yet!");
     }
 
     /**
