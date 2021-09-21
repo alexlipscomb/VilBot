@@ -2,7 +2,7 @@
     "files.eol": "\n",
     "[typescript]": {
         "editor.formatOnSave": true,
-        "editor.tabSize": 2,
+        "editor.tabSize": 4,
         "editor.codeActionsOnSave": {
             "source.organizeImports": true
         }
