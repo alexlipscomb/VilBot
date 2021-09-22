@@ -21,7 +21,7 @@ export class HotTakeDao {
             dialect: 'sqlite',
             username: 'root',
             password: '',
-            storage: dbDir + '\\hottake.db',
+            storage: dbDir + '/hottake.db',
             logging: false
         });
 
@@ -37,7 +37,7 @@ export class HotTakeDao {
         }
     }
 
-    public async createHotTake(greaterTrack: string, lesserTrack: string): Promise<string> {
+    public async createHotTake(greaterItem: string, lesserItem: string): Promise<string> {
         if (!this._isConnected) {
             this.log.error('Cannot create HotTake - no connection to hottake.db');
             return null;
@@ -45,8 +45,8 @@ export class HotTakeDao {
 
         let take: HotTake = await HotTake.create({
             id: uuid(),
-            greaterTrack: greaterTrack,
-            lesserTrack: lesserTrack
+            greaterItem: greaterItem,
+            lesserItem: lesserItem
         });
 
         return take.id;

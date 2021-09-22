@@ -12,11 +12,11 @@ export class HotTake extends MessageAssociatedModel {
 
     @AllowNull(false)
     @Column
-    public greaterTrack: string;
+    public greaterItem: string;
 
     @AllowNull(false)
     @Column
-    public lesserTrack: string;
+    public lesserItem: string;
 
     @AllowNull(false)
     @Default(0)

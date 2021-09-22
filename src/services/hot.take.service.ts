@@ -30,9 +30,9 @@ export class HotTakeService {
         await interaction.deferReply();
 
         const candidates: Array<string> = this._getHotTakeCandidates(interaction);
-        const [greaterTrack, lesserTrack]: Array<string> = _.shuffle(candidates).slice(-2);
+        const [greaterItem, lesserItem]: Array<string> = _.shuffle(candidates).slice(-2);
 
-        const id: string = await this._dao.createHotTake(greaterTrack, lesserTrack);
+        const id: string = await this._dao.createHotTake(greaterItem, lesserItem);
         if (id) {
             const take: HotTake = await this._dao.getHotTake(id);
             if (take) {
@@ -77,7 +77,7 @@ export class HotTakeService {
     }
 
     private _getUserFriendlyTake(take: HotTake): string {
-        return `${take.greaterTrack} > ${take.lesserTrack}`;
+        return `${take.greaterItem} > ${take.lesserItem}`;
     }
 
     private _getAgreeEmoji(guild: Guild): string {
