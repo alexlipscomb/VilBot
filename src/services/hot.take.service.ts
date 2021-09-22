@@ -53,27 +53,43 @@ export class HotTakeService {
 
     private async _handleMessageReactionsChanged(reaction: MessageReaction, user: User): Promise<void> {
         const message: Message | PartialMessage = reaction.message;
-        if (message && message.id && message.channelId && message.guildId) {
+        if (!user.bot && message && message.id && message.channelId && message.guildId) {
             const take: HotTake = await this._dao.getHotTakeByMeta({ messageId: message.id, channelId: message.channelId, guildId: message.guildId });
             if (take) {
                 if (this.log.isDebugEnabled()) {
                     this.log.debug("Found hot take for message reactions.", message.reactions);
                 }
+
+                const resolvedReaction: MessageReaction = message.reactions.resolve(reaction);
+                const resolvedReactionEmojiId = resolvedReaction.emoji.id;
+                const reactionCount = resolvedReaction.count - 1; // Compensating for bot reacts
+
+                if (resolvedReactionEmojiId === this._getAgreeEmoji2(message.guild)) {
+                    this._dao.updateHotTakeAgrees(take.id, reactionCount);
+                } else if (resolvedReactionEmojiId === this._getDisagreeEmoji2(message.guild)) {
+                    this._dao.updateHotTakeDisagrees(take.id, reactionCount);
+                }
+
                 // TODO 
-                // Get agree and disagree count, update database
 
                 // If this reaction is in conflict with the user's previous vote, remove the old vote
 
                 // If applicable, add to hall of based
 
                 // Maybe add an emoji to indicate if this is a very hot or very cold (or based/unbased) take?
-
-                // I've tried several variants on this code and I can't seem to pull the current reaction counts off
-                // const agreeReact: MessageReaction = message.reactions.cache.get(this._getAgreeEmoji(message.guild));
-                // const disagreeReact: MessageReaction = message.reactions.cache.get(this._getDisagreeEmoji(message.guild));
-                // this._dao.updateHotTakeAgreement(take.id, agreeReact.count, disagreeReact.count);
             }
         }
+    }
+
+
+    private _getAgreeEmoji2(guild: Guild): string {
+        const guildEmojiId: string = '888931156769247242';
+        return guildEmojiId;
+    }
+
+    private _getDisagreeEmoji2(guild: Guild): string {
+        const guildEmojiId = '889059877505368104';
+        return guildEmojiId;
     }
 
     private _getUserFriendlyTake(take: HotTake): string {

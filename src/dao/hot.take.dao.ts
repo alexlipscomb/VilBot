@@ -79,6 +79,22 @@ export class HotTakeDao {
         await HotTake.update(update, { where: { id: id } })
     }
 
+    public async updateHotTakeAgrees(id: string, agreeCount: number): Promise<void> {
+        const update: Partial<HotTake> = { agreeCount: agreeCount };
+        if (this.log.isDebugEnabled()) {
+            this.log.debug(`Updating hot take agreement for id ${id}:`, update);
+        }
+        await HotTake.update(update, { where: { id: id } })
+    }
+
+    public async updateHotTakeDisagrees(id: string, disagreeCount: number): Promise<void> {
+        const update: Partial<HotTake> = { disagreeCount: disagreeCount };
+        if (this.log.isDebugEnabled()) {
+            this.log.debug(`Updating hot take agreement for id ${id}:`, update);
+        }
+        await HotTake.update(update, { where: { id: id } })
+    }
+
     public async addMessageMetadata(id: string, meta: MessageMeta): Promise<void> {
         await HotTake.update(meta, { where: { id: id } });
     }
