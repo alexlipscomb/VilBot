@@ -33,7 +33,6 @@ export class GarfCommand implements ICommand {
 
         switch (commandName) {
             case 'yeet':
-                console.log("yeet");
                 var canvas: Canvas.Canvas = Canvas.createCanvas(600, 180);
                 var context: Canvas.NodeCanvasRenderingContext2D = canvas.getContext('2d');
 
@@ -52,7 +51,6 @@ export class GarfCommand implements ICommand {
 
                 break;
             case 'pipe':
-                console.log("pipe");
                 var canvas: Canvas.Canvas = Canvas.createCanvas(600, 180);
                 var context: Canvas.NodeCanvasRenderingContext2D = canvas.getContext('2d');
 
