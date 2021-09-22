@@ -13,15 +13,19 @@ import { VilbotCommand } from './commands/vilbot.command';
 import { token } from './config.json';
 import { EventConstants } from './constants/event.constants';
 import { HotTakeDao } from './dao/hot.take.dao';
+import { ProposalDao } from './dao/proposal.dao';
 import { EventService } from './services/event.service';
 import { HotTakeService } from './services/hot.take.service';
 import { Logger } from './services/logging.service';
+import { ProposalService } from './services/proposal.service';
 
 const log: Logger = Logger.getLogger("index");
 
 // Initialize services
 Container.get(HotTakeDao).initialize();
 Container.get(HotTakeService).initialize();
+Container.get(ProposalDao).initialize();
+Container.get(ProposalService).initialize();
 
 // Load commands - commands must be present in this array to load
 Container.import([ProposalCommand, VilbotCommand, TestCommand, SuggestionBoxCommand, GarfCommand, HotTakeCommand]);

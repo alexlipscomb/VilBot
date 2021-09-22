@@ -2,14 +2,45 @@ import { roleMention } from '@discordjs/builders';
 import { CommandInteraction, Message, MessageEmbed } from "discord.js";
 import { Service } from 'typedi';
 import { proposalRoleId } from '../config.json';
+import { ProposalDao } from '../dao/proposal.dao';
+import { Proposal } from '../model/proposal';
 import { VilbotUtil } from '../util/vilbot.util';
+import { EventService } from './event.service';
+import { Logger } from './logging.service';
 
 @Service()
 export class ProposalService {
-    constructor() { }
+    private readonly log: Logger = Logger.getLogger('ProposalService');
+
+    constructor(
+        private _dao: ProposalDao,
+        private _eventService: EventService
+    ) { }
+
+    public initialize(): void {
+
+    }
 
     public async createNewProposal(interaction: CommandInteraction): Promise<void> {
         const pingMode: boolean = !!interaction.options.getBoolean('ping');
+
+        try {
+            const id: string = await this._dao.createProposal(interaction.options.getString('proposal'), interaction.user.id);
+            if (id) {
+                const proposal: Proposal = await this._dao.getProposalById(id);
+                if (proposal) {
+                    await this._dao.addMessageMetadata(id, {
+                        messageId: interaction.id,
+                        channelId: interaction.channel.id,
+                        guildId: interaction.guild.id
+                    })
+                }
+            }
+        } catch (error) {
+            await interaction.reply('Something went wrong while creating your proposal.') // Make ephemeral?
+
+        }
+
 
         const proposalEmbed: MessageEmbed = this._createProposalEmbed(interaction);
 
@@ -29,8 +60,35 @@ export class ProposalService {
     }
 
     public async setProposalChannel(interaction: CommandInteraction): Promise<void> {
+        try {
+            this._dao.setProposalChannel(interaction);
+            await interaction.reply(`Set ${interaction.options.getChannel('channel')} as the proposal channel`);
+        } catch (error) {
+            this.log.error('Error setting proposal channel:', error);
+            await interaction.reply('There was an error setting the proposal channel')
+        }
+    }
+
+    public async setProposalMode(interaction: CommandInteraction, mode: string): Promise<void> {
+        switch (mode) {
+            case 'majority':
+                return await interaction.reply('Set pass condition to `majority`');
+            case 'static':
+                const numVotesToPass: number = interaction.options.getInteger('votes');
+                if (this._setStaticVotes(numVotesToPass)) {
+                    return await interaction.reply(`Set pass condtion to \`static\` with ${numVotesToPass} votes required to pass`);
+                } else {
+                    return await interaction.reply('Something went wrong on our end. Try again later');
+                }
+        }
+        const proposalMode = interaction;
         // TODO
-        await interaction.reply("This feature has not been implemented yet!");
+
+        console.log(proposalMode);
+    }
+
+    private async _setStaticVotes(numVotes: number): Promise<boolean> {
+        return true;
     }
 
     /**

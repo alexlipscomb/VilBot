@@ -8,7 +8,7 @@ import { Logger } from "../services/logging.service";
 
 @Service()
 export class HotTakeDao {
-    private readonly log: Logger = Logger.getLogger("HotTakeDao");
+    private readonly log: Logger = Logger.getLogger('HotTakeDao');
 
     private _db: Sequelize;
     private _isConnected: boolean = false;

@@ -9,7 +9,7 @@ import { Logger } from "./logging.service";
 
 @Service()
 export class HotTakeService {
-    private readonly log: Logger = Logger.getLogger("HotTakeService");
+    private readonly log: Logger = Logger.getLogger('HotTakeService');
 
     constructor(
         private _dao: HotTakeDao,
