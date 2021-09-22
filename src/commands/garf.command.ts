@@ -19,8 +19,10 @@ export class GarfCommand implements ICommand {
                 option.setName('mode')
                     .setDescription('Select the mode')
                     .setRequired(true)
-                    .addChoice('Yeet', 'yeet')
-                    .addChoice('Pipe', 'pipe')
+                    .addChoice('yeet', 'yeet')
+                    .addChoice('pipe', 'pipe')
+                    .addChoice('generate', 'generate')
+                    .addChoice('panel', 'panel')
             )
     }
 
@@ -37,8 +39,8 @@ export class GarfCommand implements ICommand {
                 var context: Canvas.NodeCanvasRenderingContext2D = canvas.getContext('2d');
 
                 // 13,313 garfield comics
-                var selectedGarfComicPath: string = `/Users/alips/Documents/GitHub/VilBot/res/garfield/comics/garf_${Math.round(Math.random() * 13313)}.png`;
-                var garfyeetImagePath: string = '/Users/alips/Documents/GitHub/VilBot/res/garfield/garfyeet.png';
+                var selectedGarfComicPath: string = `../res/garfield/comics/garf_${Math.round(Math.random() * 13313)}.png`;
+                var garfyeetImagePath: string = '../res/garfield/garfyeet.png';
 
                 var background: Canvas.Image = await Canvas.loadImage(selectedGarfComicPath);
                 var garfyeetImage: Canvas.Image = await Canvas.loadImage(garfyeetImagePath);
@@ -55,7 +57,7 @@ export class GarfCommand implements ICommand {
                 var context: Canvas.NodeCanvasRenderingContext2D = canvas.getContext('2d');
 
                 var garfieldpipeId: number = Math.round(Math.random() * 13313);
-                var selectedGarfComicPath: string = `/Users/alips/Documents/GitHub/VilBot/res/garfield/comics/garf_${garfieldpipeId}.png`;
+                var selectedGarfComicPath: string = `../res/garfield/comics/garf_${garfieldpipeId}.png`;
                 var garfpipeVersion: string = "_original";
 
                 if (garfieldpipeId <= 47) {
@@ -66,13 +68,51 @@ export class GarfCommand implements ICommand {
                     garfpipeVersion = "4";
                 }
 
-                var garfpipeImagePath: string = `/Users/alips/Documents/GitHub/VilBot/res/garfield/garfpipe${garfpipeVersion}.png`;
+                var garfpipeImagePath: string = `../res/garfield/garfpipe${garfpipeVersion}.png`;
 
                 var background: Canvas.Image = await Canvas.loadImage(selectedGarfComicPath);
                 var garfpipeImage: Canvas.Image = await Canvas.loadImage(garfpipeImagePath);
 
                 context.drawImage(background, 0, 0, canvas.width, canvas.height);
                 context.drawImage(garfpipeImage, 392, 0, 208, canvas.height);
+
+                var attachment: MessageAttachment = new MessageAttachment(canvas.toBuffer(), 'garfpipe.png');
+                await interaction.reply({ files: [attachment] });
+
+                break;
+            case 'generate':
+                // Generate a random garfield comic with each of the three panels 
+                var canvas: Canvas.Canvas = Canvas.createCanvas(600, 180);
+                var context: Canvas.NodeCanvasRenderingContext2D = canvas.getContext('2d');
+
+
+                var garfComicPath: string = '../res/garfield/comics/garf_';
+
+                for (var i = 0; i < 3; i++) {
+                    var currentPanelPosition = Math.round((canvas.width / 3)) * i;
+                    var garfComicId: number = Math.round(Math.random() * 13313)
+
+                    var currentPanel: Canvas.Image = await Canvas.loadImage(`${garfComicPath}${garfComicId}.png`);
+
+                    context.drawImage(currentPanel, currentPanelPosition, 0, canvas.width, canvas.height, currentPanelPosition, 0, canvas.width, canvas.height);
+                }
+
+                var attachment: MessageAttachment = new MessageAttachment(canvas.toBuffer(), 'garfpipe.png');
+                await interaction.reply({ files: [attachment] });
+
+                break;
+            case 'panel':
+                var canvas: Canvas.Canvas = Canvas.createCanvas(200, 200);
+                var context: Canvas.NodeCanvasRenderingContext2D = canvas.getContext('2d');
+
+                var panelWidth: number = 200;
+
+                var garfComicPath: string = '../res/garfield/comics/garf_';
+                var randomPanel: number = Math.round(Math.random() * 2);
+                var garfComicId: number = Math.round(Math.random() * 13313);
+                var garfComic: Canvas.Image = await Canvas.loadImage(`${garfComicPath}${garfComicId}.png`);
+
+                context.drawImage(garfComic, randomPanel * panelWidth, 0, canvas.width, canvas.height, 0, 0, canvas.width + 20, canvas.height);
 
                 var attachment: MessageAttachment = new MessageAttachment(canvas.toBuffer(), 'garfpipe.png');
                 await interaction.reply({ files: [attachment] });
