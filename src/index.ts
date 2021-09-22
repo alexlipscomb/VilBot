@@ -1,21 +1,36 @@
-const fs = require('fs');
-const { Client, Collection, Intents } = require('discord.js');
-const { token } = require('./config.json');
+require('source-map-support').install();
+import { BaseCommandInteraction, Client, Intents, Interaction } from 'discord.js';
+import * as fs from 'fs';
+import 'reflect-metadata';
+import Container from 'typedi';
+import { GarfCommand } from './commands/garf.command';
+import { CommandToken, ICommand } from './commands/interfaces/i.command';
+import { ProposalCommand } from './commands/proposal.command';
+import { SuggestionBoxCommand } from './commands/suggestion.box.command';
+import { TestCommand } from './commands/test.command';
+import { VilbotCommand } from './commands/vilbot.command';
+import { token } from './config.json';
+import { Logger } from './services/logging.service';
 
-const client = new Client({ intents: [Intents.FLAGS.GUILDS] });
+const log: Logger = Logger.getLogger("index");
 
-client.commands = new Collection();
-const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
+// Load commands - commands must be present in this array to load
+Container.import([ProposalCommand, VilbotCommand, TestCommand, SuggestionBoxCommand, GarfCommand]);
+const commandContainers: ICommand[] = Container.getMany(CommandToken);
+log.debug(commandContainers);
 
-console.log(commandFiles);
+const commands: Map<string, ICommand> = new Map();
 
-// Load commands
-for (const file of commandFiles) {
-    const command = require(`./commands/${file}`);
-    client.commands.set(command.data.name, command);
+for (let command of commandContainers) {
+    log.info(`Loading command '${command.getName()}'`);
+    commands.set(command.getName(), command);
 }
 
+// Construct client
+const client: Client<boolean> = new Client<boolean>({ intents: [Intents.FLAGS.GUILDS] });
+
 // Load event files
+// TODO I suspect there's a cleaner way to do this but I don't want to mess with it for now.
 const eventFiles = fs.readdirSync('./events').filter(file => file.endsWith('.js'));
 for (const file of eventFiles) {
     const event = require(`./events/${file}`);
@@ -26,46 +41,24 @@ for (const file of eventFiles) {
     }
 }
 
-client.on('interactionCreate', async interaction => {
-    console.log('\x1b[34m', `- ${getTimestamp()} (UTC ${getUTCTimeStamp()}): ${interaction.user.tag} used ${interaction.commandName} in \#${interaction.channel.name}`);
+client.on('interactionCreate', async (interaction: Interaction) => {
+    log.debug(`${interaction.user.tag} used ${(<BaseCommandInteraction>interaction).commandName} in \#${(<any>interaction.channel).name}`);
+
     if (!interaction.isCommand()) return;
 
-    const command = client.commands.get(interaction.commandName);
+    const command = commands.get(interaction.commandName);
 
-    if (!command) return;
+    if (!command) {
+        log.warn("No command associated with command name", interaction.commandName);
+        return;
+    }
 
     try {
         await command.execute(interaction);
     } catch (error) {
-        console.error(error);
+        log.error(error);
         await interaction.reply({ content: 'There was an error while executing this command, please try again later.', ephemeral: true });
     }
 });
 
-function getTimestamp() {
-    var date = new Date()
-    var year = String(date.getFullYear());
-    var month = String(date.getMonth());
-    var day = String(date.getDate());
-    var hour = String(date.getHours());
-    var min = String(date.getMinutes());
-    var sec = String(date.getSeconds());
-
-    return `${year}-${month}-${day} ${hour}:${min}:${sec}`;
-}
-
-function getUTCTimeStamp() {
-    var date = new Date()
-    var year = String(date.getUTCFullYear());
-    var month = String(date.getUTCMonth());
-    var day = String(date.getUTCDate());
-    var hour = String(date.getUTCHours());
-    var min = String(date.getUTCMinutes());
-    var sec = String(date.getUTCSeconds());
-
-    return `${year}-${month}-${day} ${hour}:${min}:${sec}`;
-}
-
 client.login(token);
-
-export { };

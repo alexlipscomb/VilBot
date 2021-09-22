@@ -1,0 +1,11 @@
+{
+    "files.eol": "\n",
+    "[typescript]": {
+        "editor.formatOnSave": true,
+        "editor.tabSize": 4,
+        "editor.codeActionsOnSave": {
+            "source.organizeImports": true
+        }
+    },
+    "editor.detectIndentation": false
+}

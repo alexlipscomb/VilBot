@@ -1,25 +1,32 @@
 {
-  "name": "vilbot",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "start": "cd ./dist && node index.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "compile": "rm -rf ./dist && npx tsc && cp ./src/config.json ./dist/",
-    "quickrun": "npm run compile && npm start"
-  },
-  "author": "Alex Lipscomb",
-  "license": "MIT",
-  "devDependencies": {
-    "@discordjs/builders": "^0.6.0",
-    "@discordjs/rest": "^0.1.0-canary.0",
-    "canvas": "^2.8.0",
-    "discord-api-types": "^0.23.1",
-    "discord.js": "^13.1.0",
-    "sequelize": "^6.6.5",
-    "sqlite3": "^4.2.0",
-    "tslint": "^6.1.3",
-    "typescript": "^4.4.3"
-  }
+    "name": "vilbot",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "start": "cd ./dist && node index.js",
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "clean": "npx rimraf ./dist",
+        "compile": "npx tsc",
+        "postbuild": "npx copyfiles -f ./src/config.json ./src/logconfig.json ./dist/",
+        "quickrun": "npm run clean && npm run compile && npm run postbuild && npm run start"
+    },
+    "author": "Alex Lipscomb",
+    "license": "MIT",
+    "devDependencies": {
+        "@discordjs/builders": "^0.6.0",
+        "@discordjs/rest": "^0.1.0-canary.0",
+        "canvas": "^2.8.0",
+        "copyfiles": "^2.4.1",
+        "discord-api-types": "^0.23.1",
+        "discord.js": "^13.1.0",
+        "reflect-metadata": "^0.1.13",
+        "rimraf": "^3.0.2",
+        "sequelize": "^6.6.5",
+        "source-map-support": "^0.5.20",
+        "sqlite3": "^4.2.0",
+        "tslint": "^6.1.3",
+        "typedi": "^0.10.0",
+        "typescript": "^4.4.3"
+    }
 }
