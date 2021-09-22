@@ -9,6 +9,7 @@
         "clean": "npx rimraf ./dist",
         "compile": "npx tsc",
         "postbuild": "npx copyfiles -f ./src/config.json ./src/logconfig.json ./dist/",
+        "deploycommands": "cd ./dist && node deploy-commands.js",
         "quickrun": "npm run clean && npm run compile && npm run postbuild && npm run start"
     },
     "author": "Alex Lipscomb",

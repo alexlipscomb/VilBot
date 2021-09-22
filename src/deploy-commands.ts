@@ -2,15 +2,25 @@ const fs = require('fs');
 const { REST } = require('@discordjs/rest');
 const { Routes } = require('discord-api-types/v9');
 const { clientId, guildId, token } = require('./config.json');
+import 'reflect-metadata';
+import Container from 'typedi';
+import { GarfCommand } from "./commands/garf.command";
+import { CommandToken, ICommand } from "./commands/interfaces/i.command";
+import { ProposalCommand } from "./commands/proposal.command";
+import { SuggestionBoxCommand } from './commands/suggestion.box.command';
+import { TestCommand } from './commands/test.command';
+import { VilbotCommand } from './commands/vilbot.command';
 
-const commands = [];
-const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
+// Load commands - commands must be present in this array to load
+Container.import([ProposalCommand, VilbotCommand, TestCommand, SuggestionBoxCommand, GarfCommand]);
+const commandContainers: ICommand[] = Container.getMany(CommandToken);
+
+var commands = [];
 console.log("Commands to deploy:")
-console.log(commandFiles);
+console.log(commandContainers);
 
 // Locate command files and load into JSON
-for (const file of commandFiles) {
-    const command = require(`./commands/${file}`);
+for (const command of commandContainers) {
     commands.push(command.data.toJSON());
 }
 
