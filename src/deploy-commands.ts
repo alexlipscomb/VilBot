@@ -5,6 +5,7 @@ const { clientId, guildId, token } = require('./config.json');
 import 'reflect-metadata';
 import Container from 'typedi';
 import { GarfCommand } from "./commands/garf.command";
+import { HotTakeCommand } from './commands/hot.take.command';
 import { CommandToken, ICommand } from "./commands/interfaces/i.command";
 import { ProposalCommand } from "./commands/proposal.command";
 import { SuggestionBoxCommand } from './commands/suggestion.box.command';
@@ -12,7 +13,7 @@ import { TestCommand } from './commands/test.command';
 import { VilbotCommand } from './commands/vilbot.command';
 
 // Load commands - commands must be present in this array to load
-Container.import([ProposalCommand, VilbotCommand, TestCommand, SuggestionBoxCommand, GarfCommand]);
+Container.import([ProposalCommand, VilbotCommand, TestCommand, SuggestionBoxCommand, GarfCommand, HotTakeCommand]);
 const commandContainers: ICommand[] = Container.getMany(CommandToken);
 
 var commands = [];
@@ -41,3 +42,4 @@ const rest = new REST({ version: '9' }).setToken(token);
 })();
 
 export { };
+
