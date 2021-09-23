@@ -13,6 +13,9 @@ export class ProposalCommand implements ICommand {
     public static readonly NEW_PROPOSAL: string = 'new';
     public static readonly MEMBERS: string = 'members';
     public static readonly SET_CHANNEL: string = 'setproposalchannel';
+    public static readonly SET_AGREE_EMOJI: string = 'setagreeemoji';
+    public static readonly SET_DISAGREE_EMOJI: string = 'setdisagreeemoji';
+
 
     public data: Pick<SlashCommandBuilder, "name" | "toJSON">;
 
@@ -43,6 +46,18 @@ export class ProposalCommand implements ICommand {
             )
             .addSubcommand(subcommand =>
                 subcommand
+                    .setName(ProposalCommand.SET_AGREE_EMOJI)
+                    .setDescription('Set the emoji that will be used for agrees')
+                    .addStringOption(option => option.setName('emoji').setDescription('The emoji to use').setRequired(true))
+            )
+            .addSubcommand(subcommand =>
+                subcommand
+                    .setName(ProposalCommand.SET_DISAGREE_EMOJI)
+                    .setDescription('Set the emoji that will be used for agrees')
+                    .addStringOption(option => option.setName('emoji').setDescription('The emoji to use').setRequired(true))
+            )
+            .addSubcommand(subcommand =>
+                subcommand
                     .setName(ProposalCommand.PASS_CONDITION_MODE_MAJORITY)
                     .setDescription('Set the pass condition to \'majority\'')
             )
@@ -68,6 +83,12 @@ export class ProposalCommand implements ICommand {
                 return await this._proposalService.getMemberCount(interaction);
             case ProposalCommand.SET_CHANNEL:
                 return await this._proposalService.setProposalChannel(interaction);
+            case ProposalCommand.SET_AGREE_EMOJI:
+                await interaction.reply(interaction.options.getString('emoji'));
+                break;
+            case ProposalCommand.SET_DISAGREE_EMOJI:
+                await interaction.reply(interaction.options.getString('emoji'));
+                break;
 
             // TODO
             // Make these commands only applicable to a mod role.
