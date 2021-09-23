@@ -51,7 +51,7 @@ export class ProposalDao {
         const proposalChannelId: string = interaction.options.getChannel('channel').id;
         const guildId: string = interaction.guild.id;
 
-        if (this._guildIsInitialized(guildId)) {
+        if (await this._guildIsInitialized(guildId)) {
             const guildSettings = await GuildSettings.findOne({ where: { id: guildId } });
             guildSettings.update({ channelId: proposalChannelId });
         } else {
@@ -95,7 +95,7 @@ export class ProposalDao {
     private async _guildIsInitialized(id: string): Promise<boolean> {
         const guildSettings: Array<GuildSettings> = await GuildSettings.findAll({ where: { id: id } });
         if (guildSettings) {
-            if (guildSettings.length == 1) {
+            if (guildSettings.length === 1) {
                 return true;
             }
         }

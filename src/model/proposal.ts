@@ -52,6 +52,20 @@ export class GuildSettings extends GuildAssociatedModel {
     @AllowNull(true)
     @Column
     public channelId: string;
+
+    @AllowNull(false)
+    @Default(':arrow_up:')
+    @Column
+    public agreeEmoji: string
+
+    @AllowNull(false)
+    @Default(':arrow_down:')
+    @Column
+    public disagreeEmoji: string
+
+    @AllowNull(true)
+    @Column
+    public proposalRole: string
 }
 
 @Table({ timestamps: true })
