@@ -10,7 +10,7 @@ import { ProposalCommand } from './commands/proposal.command';
 import { SuggestionBoxCommand } from './commands/suggestion.box.command';
 import { TestCommand } from './commands/test.command';
 import { VilbotCommand } from './commands/vilbot.command';
-import { token } from './config.json';
+import { dbDir, token } from './config.json';
 import { EventConstants } from './constants/event.constants';
 import { HotTakeDao } from './dao/hot.take.dao';
 import { ProposalDao } from './dao/proposal.dao';
@@ -19,7 +19,13 @@ import { HotTakeService } from './services/hot.take.service';
 import { Logger } from './services/logging.service';
 import { ProposalService } from './services/proposal.service';
 
+
 const log: Logger = Logger.getLogger("index");
+
+// Create db folder if it doesn't exist already
+if (!fs.existsSync(dbDir)) {
+    fs.mkdirSync(dbDir);
+}
 
 // Initialize services
 Container.get(HotTakeDao).initialize();

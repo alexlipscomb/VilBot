@@ -1,4 +1,4 @@
-import { Column, Model } from "sequelize-typescript";
+import { Column, Model } from 'sequelize-typescript';
 
 export type MessageMeta = { messageId: string, channelId: string, guildId: string };
 
