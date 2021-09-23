@@ -63,11 +63,14 @@ export class HotTakeDao {
 
     public async getHotTakeByMeta(meta: MessageMeta): Promise<HotTake> {
         const takes: Array<HotTake> = await HotTake.findAll({ where: meta });
-        if (takes) {
+        if (takes && takes.length > 0) {
             if (takes.length != 1) {
                 this.log.error("Multiple hot takes logged with same message metadata");
+                return takes[0];
             }
-            return takes[0];
+        }
+        else if (this.log.isDebugEnabled()) {
+            this.log.debug(`Searched for hot take associated with message metadata ${meta} but none were found`);
         }
     }
 

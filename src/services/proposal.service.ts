@@ -55,6 +55,8 @@ export class ProposalService {
             try {
                 const proposalEmbed: MessageEmbed = this._createProposalEmbed(interaction);
                 const proposalMessage: Message = await proposalChannel.send({ embeds: [proposalEmbed] }) as Message;
+                proposalMessage.react('👍');
+                proposalMessage.react('👎');
                 await proposalMessage.startThread({ name: `Discuss ${interaction.options.getString('proposal').slice(0, 93)}`, autoArchiveDuration: 'MAX' });
 
                 if (pingMode) {
