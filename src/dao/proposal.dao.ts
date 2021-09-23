@@ -62,6 +62,22 @@ export class ProposalDao {
         }
     }
 
+    public async getProposalChannel(interaction: CommandInteraction): Promise<string> {
+        if (!this._isConnected) {
+            this.log.error(this.connectErrorMsg);
+            return null;
+        }
+
+        const guildId: string = interaction.guild.id;
+
+        const proposalChannel: GuildSettings = await GuildSettings.findByPk(guildId);
+
+        if (proposalChannel !== null) {
+            return proposalChannel.channelId;
+        }
+        return null;
+    }
+
 
 
     public async createProposal(item: string, userId,): Promise<string> {

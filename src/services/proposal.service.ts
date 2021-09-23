@@ -1,5 +1,5 @@
 import { roleMention } from '@discordjs/builders';
-import { CommandInteraction, Message, MessageEmbed } from "discord.js";
+import { Channel, CommandInteraction, Message, MessageEmbed } from "discord.js";
 import { Service } from 'typedi';
 import { proposalRoleId } from '../config.json';
 import { ProposalDao } from '../dao/proposal.dao';
@@ -21,6 +21,7 @@ export class ProposalService {
 
     }
 
+    // TODO set limits on length of proposals and limit the types of characters that can be sent to avoid bugs.
     public async createNewProposal(interaction: CommandInteraction): Promise<void> {
         const pingMode: boolean = !!interaction.options.getBoolean('ping');
 
@@ -35,23 +36,44 @@ export class ProposalService {
                         guildId: interaction.guild.id
                     })
                 }
+            } else {
+                return null;
             }
         } catch (error) {
-            await interaction.reply('Something went wrong while creating your proposal.') // Make ephemeral?
-
+            await interaction.reply({ content: 'Something went wrong while creating your proposal.', ephemeral: true });
         }
 
-
-        const proposalEmbed: MessageEmbed = this._createProposalEmbed(interaction);
-
-        const proposalMessage: Message = await interaction.reply({ embeds: [proposalEmbed], fetchReply: true }) as Message;
-
-        await proposalMessage.startThread({ name: `Discuss ${interaction.options.getString('proposal').slice(0, 93)}`, autoArchiveDuration: 'MAX' });
-
-        if (pingMode) {
-            await proposalMessage.channel.send(roleMention(proposalRoleId));
+        const proposalChannelId: string = await this._dao.getProposalChannel(interaction);
+        if (proposalChannelId === null) {
+            await interaction.reply({ content: 'No proposal channel was set. Set one using /proposal setproposalchannel', ephemeral: true });
+            return null;
         }
+
+        const proposalChannel: Channel = await (await interaction.guild.channels.fetch(proposalChannelId)).fetch();
+
+        if (proposalChannel.isText()) {
+            try {
+                const proposalEmbed: MessageEmbed = this._createProposalEmbed(interaction);
+                const proposalMessage: Message = await proposalChannel.send({ embeds: [proposalEmbed] }) as Message;
+                await proposalMessage.startThread({ name: `Discuss ${interaction.options.getString('proposal').slice(0, 93)}`, autoArchiveDuration: 'MAX' });
+
+                if (pingMode) {
+                    await proposalMessage.channel.send(roleMention(proposalRoleId));
+                }
+
+                await interaction.reply({ content: `Proposal created in ${proposalChannel.toString()}!`, ephemeral: true });
+
+            } catch (error) { // Catch a specific error, but I don't know what, yet.
+                this.log.error(error);
+                await interaction.reply({ content: 'Something went wrong while creating your proposal.', ephemeral: true });
+            }
+        }
+
     }
+
+    // TODO 
+    // Set Guild Agree & Disagree emojis
+    // Set Guild ProposalRole 
 
     public async getMemberCount(interaction: CommandInteraction): Promise<void> {
         const memberCount: number = VilbotUtil.getRoleMembers(interaction.guild, proposalRoleId);
