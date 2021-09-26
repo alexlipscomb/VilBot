@@ -10,24 +10,23 @@ import { ProposalCommand } from './commands/proposal.command';
 import { SuggestionBoxCommand } from './commands/suggestion.box.command';
 import { TestCommand } from './commands/test.command';
 import { VilbotCommand } from './commands/vilbot.command';
-import { dbDir, token } from './config.json';
 import { EventConstants } from './constants/event.constants';
 import { HotTakeDao } from './dao/hot.take.dao';
 import { ProposalDao } from './dao/proposal.dao';
+import { ConfigurationService } from './services/configuration.service';
 import { EventService } from './services/event.service';
 import { HotTakeService } from './services/hot.take.service';
 import { Logger } from './services/logging.service';
 import { ProposalService } from './services/proposal.service';
 
+// Set base directory
+global.__basedir = __dirname;
 
+// Initialize logger
 const log: Logger = Logger.getLogger("index");
 
-// Create db folder if it doesn't exist already
-if (!fs.existsSync(dbDir)) {
-    fs.mkdirSync(dbDir);
-}
-
 // Initialize services
+Container.get(ConfigurationService).initialize();
 Container.get(HotTakeDao).initialize();
 Container.get(HotTakeService).initialize();
 Container.get(ProposalDao).initialize();
@@ -97,4 +96,10 @@ client.on(EventConstants.MessageReactionRemove, async (reaction: MessageReaction
     Container.get(EventService).raise(EventConstants.MessageReactionRemove, { reaction, user });
 });
 
-client.login(token);
+const token = Container.get(ConfigurationService).getToken();
+if (token) {
+    client.login(token);
+}
+else {
+    log.fatal("No token provided");
+}

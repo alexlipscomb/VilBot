@@ -1,10 +1,11 @@
 import { CommandInteraction } from "discord.js";
+import * as path from 'path';
 import { Sequelize } from "sequelize-typescript";
 import { Service } from "typedi";
 import { v4 as uuid } from 'uuid';
-import { dbDir } from "../config.json";
 import { MessageMeta } from "../model/interfaces/message.associated.model";
 import { GuildSettings, Proposal } from "../model/proposal";
+import { ConfigurationService } from "../services/configuration.service";
 import { Logger } from "../services/logging.service";
 
 @Service()
@@ -16,7 +17,9 @@ export class ProposalDao {
     private _db: Sequelize;
     private _isConnected: boolean = false;
 
-    constructor() { }
+    constructor(
+        private _configService: ConfigurationService
+    ) { }
 
     public async initialize(): Promise<void> {
         this._db = new Sequelize({
@@ -24,7 +27,7 @@ export class ProposalDao {
             dialect: 'sqlite',
             username: 'root',
             password: '',
-            storage: dbDir + '/proposal.db',
+            storage: path.join(this._configService.getDbDir(), '/proposal.db'),
             logging: false
         });
 

@@ -77,6 +77,8 @@ export class HotTakeService {
                 // If applicable, add to hall of based
 
                 // Maybe add an emoji to indicate if this is a very hot or very cold (or based/unbased) take?
+            } else if (this.log.isDebugEnabled()) {
+                this.log.debug('HotTakeDao returned no result while searching for hot take.');
             }
         }
     }

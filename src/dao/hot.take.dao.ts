@@ -1,9 +1,10 @@
+import * as path from 'path';
 import { Sequelize } from "sequelize-typescript";
 import { Service } from "typedi";
 import { v4 as uuid } from 'uuid';
-import { dbDir } from "../config.json";
 import { HotTake } from "../model/hot.take";
 import { MessageMeta } from "../model/interfaces/message.associated.model";
+import { ConfigurationService } from "../services/configuration.service";
 import { Logger } from "../services/logging.service";
 
 @Service()
@@ -13,7 +14,9 @@ export class HotTakeDao {
     private _db: Sequelize;
     private _isConnected: boolean = false;
 
-    constructor() { }
+    constructor(
+        private _configService: ConfigurationService
+    ) { }
 
     public async initialize(): Promise<void> {
         this._db = new Sequelize({
@@ -21,7 +24,7 @@ export class HotTakeDao {
             dialect: 'sqlite',
             username: 'root',
             password: '',
-            storage: dbDir + '/hottake.db',
+            storage: path.join(this._configService.getDbDir(), '/hottake.db'),
             logging: false
         });
 
@@ -66,11 +69,11 @@ export class HotTakeDao {
         if (takes && takes.length > 0) {
             if (takes.length != 1) {
                 this.log.error("Multiple hot takes logged with same message metadata");
-                return takes[0];
             }
+            return takes[0];
         }
         else if (this.log.isDebugEnabled()) {
-            this.log.debug(`Searched for hot take associated with message metadata ${meta} but none were found`);
+            this.log.debug('Searched for hot take associated with message metadata', meta, 'but none were found');
         }
     }
 

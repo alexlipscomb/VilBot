@@ -1,5 +1,4 @@
 import { Collection, Guild, GuildMember } from 'discord.js';
-import { proposalChannelId, suggestionBoxChannelId } from '../config.json';
 
 export class VilbotUtil {
     /**
@@ -45,18 +44,6 @@ export class VilbotUtil {
         return memberCount;
     }
 
-
-    // Find a way to keep the number of db calls down to a minimum. Maybe only make one call, then store it in an object.
-    public static getGuildProposalChannel(guildId) {
-        // Change this to data stored in a database per guild.
-        return proposalChannelId;
-    }
-
-    // Find a way to keep the number of db calls down to a minimum. Maybe only make one call, then store it in an object.
-    public static getGuildSuggestionboxChannel(guildId) {
-        return suggestionBoxChannelId; // Change this to data stored in a database per guild.
-    }
-
     // TODO move to util
     public static getTimestamp() {
         let date = new Date()
@@ -73,11 +60,11 @@ export class VilbotUtil {
     public static getUTCTimeStamp() {
         let date = new Date()
         let year = String(date.getUTCFullYear());
-        let month = String(date.getUTCMonth());
-        let day = String(date.getUTCDate());
+        let month = String(date.getUTCMonth()).padStart(2, '0');
+        let day = String(date.getUTCDate()).padStart(2, '0');
         let hour = String(date.getUTCHours());
-        let min = String(date.getUTCMinutes());
-        let sec = String(date.getUTCSeconds());
+        let min = String(date.getUTCMinutes()).padStart(2, '0');
+        let sec = String(date.getUTCSeconds()).padStart(2, '0');
 
         return `${year}-${month}-${day} ${hour}:${min}:${sec}`;
     }

@@ -1,10 +1,10 @@
 import { roleMention } from '@discordjs/builders';
 import { Channel, CommandInteraction, Message, MessageEmbed } from "discord.js";
 import { Service } from 'typedi';
-import { proposalRoleId } from '../config.json';
 import { ProposalDao } from '../dao/proposal.dao';
 import { Proposal } from '../model/proposal';
 import { VilbotUtil } from '../util/vilbot.util';
+import { ConfigurationService } from './configuration.service';
 import { EventService } from './event.service';
 import { Logger } from './logging.service';
 
@@ -14,7 +14,8 @@ export class ProposalService {
 
     constructor(
         private _dao: ProposalDao,
-        private _eventService: EventService
+        private _eventService: EventService,
+        private _configService: ConfigurationService
     ) { }
 
     public initialize(): void {
@@ -60,7 +61,7 @@ export class ProposalService {
                 await proposalMessage.startThread({ name: `Discuss ${interaction.options.getString('proposal').slice(0, 93)}`, autoArchiveDuration: 'MAX' });
 
                 if (pingMode) {
-                    await proposalMessage.channel.send(roleMention(proposalRoleId));
+                    await proposalMessage.channel.send(roleMention(this._configService.getProposalRoleId()));
                 }
 
                 await interaction.reply({ content: `Proposal created in ${proposalChannel.toString()}!`, ephemeral: true });
@@ -78,7 +79,7 @@ export class ProposalService {
     // Set Guild ProposalRole 
 
     public async getMemberCount(interaction: CommandInteraction): Promise<void> {
-        const memberCount: number = VilbotUtil.getRoleMembers(interaction.guild, proposalRoleId);
+        const memberCount: number = VilbotUtil.getRoleMembers(interaction.guild, this._configService.getProposalRoleId());
         const votesToPass: number = Math.round(memberCount / 2);
         return await interaction.reply(`${memberCount} proposal member${(memberCount > 1) ? "s" : ""}\n${votesToPass} vote${(votesToPass > 1 ? "s" : "")} to pass`);
     }

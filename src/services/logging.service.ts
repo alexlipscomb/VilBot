@@ -101,27 +101,27 @@ export class Logger {
         }
 
         if (Logger._getLogLevel(tag) >= level) {
-            const datestr: string = ` - ${VilbotUtil.getTimestamp()} (UTC ${VilbotUtil.getUTCTimeStamp()})`;
+            const datestr: string = ` - (UTC ${VilbotUtil.getUTCTimeStamp()})`;
             let color: string = '';
             switch (level) {
                 case LogLevel.FATAL:
                     color = Logger.FATAL_COLOR;
                 case LogLevel.ERROR:
                     color = Logger.ERROR_COLOR;
-                    console.error(color + `[${LogLevel[level]}]` + datestr + ':', args);
+                    console.error(color + `[${LogLevel[level]}] ${tag}` + datestr + ':', args);
                     break;
                 case LogLevel.WARN:
                     color = Logger.WARN_COLOR;
-                    console.warn(color + `[${LogLevel[level]}]` + datestr + ':', args);
+                    console.warn(color + `[${LogLevel[level]}] ${tag}` + datestr + ':', args);
                     break;
                 case LogLevel.INFO:
                     color = Logger.INFO_COLOR;
-                    console.info(color + `[${LogLevel[level]}]` + datestr + ':', args);
+                    console.info(color + `[${LogLevel[level]}] ${tag}` + datestr + ':', args);
                     break;
                 case LogLevel.DEBUG:
                     color = Logger.DEBUG_COLOR;
                 default:
-                    console.log(color + `[${LogLevel[level]}]` + datestr + ':', args);
+                    console.log(color + `[${LogLevel[level]}] ${tag}` + datestr + ':', args);
             }
         }
     }
