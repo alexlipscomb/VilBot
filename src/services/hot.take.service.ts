@@ -4,12 +4,14 @@ import { Service } from "typedi";
 import { EventConstants } from "../constants/event.constants";
 import { HotTakeDao } from "../dao/hot.take.dao";
 import { HotTake } from "../model/hot.take";
+import { VilbotUtil } from "../util/vilbot.util";
 import { EventService } from "./event.service";
 import { Logger } from "./logging.service";
 
 @Service()
 export class HotTakeService {
     private readonly log: Logger = Logger.getLogger('HotTakeService');
+    private readonly vilbotUtil: VilbotUtil = new VilbotUtil();
 
     constructor(
         private _dao: HotTakeDao,
@@ -28,6 +30,11 @@ export class HotTakeService {
 
     public async createNewHotTake(interaction: CommandInteraction): Promise<void> {
         await interaction.deferReply();
+
+        if (!this.vilbotUtil.memberHasPermissions(interaction, [this.vilbotUtil.PERMISSIONS.ADMINISTRATOR])) {
+            await interaction.editReply("You do not have the permissions to use this command.");
+            return;
+        }
 
         const candidates: Array<string> = this._getHotTakeCandidates(interaction);
         const [greaterItem, lesserItem]: Array<string> = _.shuffle(candidates).slice(-2);
