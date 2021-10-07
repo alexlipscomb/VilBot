@@ -107,6 +107,42 @@ export class ProposalDao {
         return await Proposal.findByPk(id);
     }
 
+    public async setProposalRole(interaction: CommandInteraction): Promise<void> {
+        if (!this._isConnected) {
+            this.log.error(this.connectErrorMsg);
+            return null;
+        }
+
+        const proposalRoleid = interaction.options.getRole('role').id;
+        const guildId: string = interaction.guild.id;
+
+        if (await this._guildIsInitialized(guildId)) {
+            const guildSettings = await GuildSettings.findOne({ where: { id: guildId } });
+            guildSettings.update({ proposalRole: proposalRoleid });
+        } else {
+            await GuildSettings.create({
+                id: guildId,
+                proposalRole: proposalRoleid
+            });
+        }
+    }
+
+    public async getProposalRole(interaction: CommandInteraction): Promise<string> {
+        if (!this._isConnected) {
+            this.log.error(this.connectErrorMsg);
+            return null;
+        }
+
+        const guildId: string = interaction.guild.id;
+
+        const proposalRole = await GuildSettings.findByPk(guildId);
+
+        if (proposalRole !== null) {
+            return proposalRole.proposalRole;
+        }
+        return null;
+    }
+
     public async addMessageMetadata(id: string, meta: MessageMeta): Promise<void> {
         await Proposal.update(meta, { where: { id: id } });
     }

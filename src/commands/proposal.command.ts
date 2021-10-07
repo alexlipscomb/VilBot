@@ -13,6 +13,7 @@ export class ProposalCommand implements ICommand {
     public static readonly NEW_PROPOSAL: string = 'new';
     public static readonly MEMBERS: string = 'members';
     public static readonly SET_CHANNEL: string = 'setproposalchannel';
+    public static readonly SET_PROPOSAL_ROLE: string = 'setproposalrole';
     public static readonly SET_AGREE_EMOJI: string = 'setagreeemoji';
     public static readonly SET_DISAGREE_EMOJI: string = 'setdisagreeemoji';
 
@@ -43,6 +44,12 @@ export class ProposalCommand implements ICommand {
                     .setDescription('Set which channel proposals will be sent to')
                     .addChannelOption(option => option.setName('channel').setDescription('The target channel').setRequired(true)
                     )
+            )
+            .addSubcommand(subcommand =>
+                subcommand
+                    .setName(ProposalCommand.SET_PROPOSAL_ROLE)
+                    .setDescription('Set the role which will be able to use this command')
+                    .addRoleOption(option => option.setName('role').setDescription('The role that will use proposals').setRequired(true))
             )
             .addSubcommand(subcommand =>
                 subcommand
@@ -83,6 +90,9 @@ export class ProposalCommand implements ICommand {
                 return await this._proposalService.getMemberCount(interaction);
             case ProposalCommand.SET_CHANNEL:
                 return await this._proposalService.setProposalChannel(interaction);
+            case ProposalCommand.SET_PROPOSAL_ROLE:
+                await this._proposalService.setProposalRole(interaction);
+                break;
             case ProposalCommand.SET_AGREE_EMOJI:
                 await interaction.reply(interaction.options.getString('emoji'));
                 break;

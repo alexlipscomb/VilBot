@@ -11,6 +11,7 @@ import { Logger } from './logging.service';
 @Service()
 export class ProposalService {
     private readonly log: Logger = Logger.getLogger('ProposalService');
+    private readonly vilbotUtil: VilbotUtil = new VilbotUtil();
 
     constructor(
         private _dao: ProposalDao,
@@ -23,8 +24,12 @@ export class ProposalService {
     }
 
     // TODO set limits on length of proposals and limit the types of characters that can be sent to avoid bugs.
+    // ? Maybe check to see if the proposal role is already set, since if someone calls this command
+    // and it's not already set, that could be an issue. Better maybe to get that out of the way and confirm that the proposal role is set.
     public async createNewProposal(interaction: CommandInteraction): Promise<void> {
         const pingMode: boolean = !!interaction.options.getBoolean('ping');
+
+        // Check if the user has the proposal commnand, and if not, send an ephemeral message to them saying that they'll need the proposal role.
 
         try {
             const id: string = await this._dao.createProposal(interaction.options.getString('proposal'), interaction.user.id);
@@ -61,7 +66,7 @@ export class ProposalService {
                 await proposalMessage.startThread({ name: `Discuss ${interaction.options.getString('proposal').slice(0, 93)}`, autoArchiveDuration: 'MAX' });
 
                 if (pingMode) {
-                    await proposalMessage.channel.send(roleMention(this._configService.getProposalRoleId()));
+                    await proposalMessage.channel.send(roleMention(await this._dao.getProposalRole(interaction)));
                 }
 
                 await interaction.reply({ content: `Proposal created in ${proposalChannel.toString()}!`, ephemeral: true });
@@ -85,6 +90,10 @@ export class ProposalService {
     }
 
     public async setProposalChannel(interaction: CommandInteraction): Promise<void> {
+        if (!this.vilbotUtil.memberHasPermissions(interaction, [this.vilbotUtil.PERMISSIONS.ADMINISTRATOR])) {
+            return null;
+        }
+
         try {
             this._dao.setProposalChannel(interaction);
             await interaction.reply(`Set ${interaction.options.getChannel('channel')} as the proposal channel`);
@@ -110,6 +119,20 @@ export class ProposalService {
         // TODO
 
         console.log(proposalMode);
+    }
+
+    public async setProposalRole(interaction: CommandInteraction): Promise<void> {
+        if (!this.vilbotUtil.memberHasPermissions(interaction, [this.vilbotUtil.PERMISSIONS.ADMINISTRATOR])) {
+            return null;
+        }
+
+        try {
+            this._dao.setProposalRole(interaction);
+            await interaction.reply(`Set ${interaction.options.getRole('role')} as the proposal role`);
+        } catch (error) {
+            this.log.error('Error setting proposal role:', error);
+            await interaction.reply('There was an error setting the proposal role');
+        }
     }
 
     private async _setStaticVotes(numVotes: number): Promise<boolean> {
